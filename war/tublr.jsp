@@ -48,14 +48,18 @@
 		</form>
 	</div>
 
-	<div id="content-wrapper">
-		<c:forEach items="${imageList}" var="image" varStatus="index">
+	<c:forEach items="${imageList}" var="image" varStatus="index">
+		<div id="content-wrapper">
+			<div class="comment_data">
+				<div class="comment_image">
+					<a href="serve?blobKey=${image['key']}"><img
+						src="serve?thumb=yes&blobKey=${image['key']}"
+						alt="${image['message']}" /></a>
+				</div>
+				<div class="comment_text">FIXME</div>
+			</div>
 
-			<img src="serve?blobKey=${image['key']}"
-				alt="${image['message']}" />
-		</c:forEach>
-
-		<!-- 
+			<!-- 
 			<div class="post">
 			<div class="post_data">
 				<div class="post_image">
@@ -82,6 +86,7 @@
 		</div>
 		<hr />
 		-->
-	</div>
+		</div>
+	</c:forEach>
 </body>
 </html>
