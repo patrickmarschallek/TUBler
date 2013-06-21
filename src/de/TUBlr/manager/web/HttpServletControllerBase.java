@@ -41,18 +41,7 @@ public abstract class HttpServletControllerBase extends HttpServlet {
 		String op = getOperation(req);
 		HttpRequestActionBase action = (HttpRequestActionBase) actions.get(op);
 		if (action == null)
-			new HttpRequestActionBase() {
-				@Override
-				public void perform(HttpServletRequest req,
-						HttpServletResponse resp) throws ServletException {
-					try {
-						forward(req, resp, "/tublr.jsp");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}.perform(req, resp);
+			new ShowHomeAction().perform(req, resp);
 		else
 			action.perform(req, resp);
 	}

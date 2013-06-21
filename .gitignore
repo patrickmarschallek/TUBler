@@ -4,10 +4,6 @@
 *.jar
 *.war
 
-# gwt caches and compiled units #
-war/gwt_bree/
-gwt-unitCache/
-
 # boilerplate generated classes #
 .apt_generated/
 
@@ -15,3 +11,5 @@ gwt-unitCache/
 war/WEB-INF/deploy/
 war/WEB-INF/classes/
 
+*/classes/
+*/bin/

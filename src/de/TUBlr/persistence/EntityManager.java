@@ -19,17 +19,20 @@ public class EntityManager implements IEntityManager {
 	private DatastoreService datastore = DatastoreServiceFactory
 			.getDatastoreService();
 
-	private IEntity mapTo(Entity dataStoreEntity) {
+	private <T> T mapTo(Entity dataStoreEntity, Class<T> classValue) {
 		try {
 			Object obj = Class.forName(dataStoreEntity.getKind()).newInstance();
-			if (obj instanceof IEntity) {
-				IEntity entity = (IEntity) obj;
+			if (obj.getClass().equals(classValue)) {
+				T entity = (T) obj;
 				Field[] fields = entity.getClass().getDeclaredFields();
 				for (Field field : fields) {
-					Object value = dataStoreEntity.getProperty(field.getName());
-
+					String propertyName = field.getName();
+					Object value = dataStoreEntity.getProperty(propertyName);
+					String property = field.getName().substring(0, 1)
+							.toUpperCase()
+							+ field.getName().substring(1).toLowerCase();
 					Method setter = entity.getClass().getMethod(
-							"set" + field.getName(), field.getClass());
+							"set" + property, field.getType());
 					setter.invoke(entity, value);
 
 				}
@@ -47,15 +50,18 @@ public class EntityManager implements IEntityManager {
 		return null;
 	}
 
-	private Entity mapTo(IEntity entity) {
-		String kind = entity.getClass().toString();
+	private <T> Entity mapTo(T entity) {
+		String kind = entity.getClass().getName();
 		Entity dataStoreEntity = new Entity(kind);
 		Field[] fields = entity.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			Method getter;
 			try {
-				getter = entity.getClass().getMethod("get" + field.getName(),
-						null);
+				String propertyName = field.getName();
+				propertyName = propertyName.substring(0, 1).toUpperCase()
+						+ propertyName.substring(1).toLowerCase();
+				getter = entity.getClass()
+						.getMethod("get" + propertyName, null);
 				Object value = getter.invoke(entity, null);
 				dataStoreEntity.setProperty(field.getName(), value);
 			} catch (NoSuchMethodException | SecurityException
@@ -70,37 +76,39 @@ public class EntityManager implements IEntityManager {
 	}
 
 	@Override
-	public IEntity find(String key, Class<?> classValue) {
+	public <T> T find(String key, Class<T> classValue) {
 		FilterPredicate filter = new FilterPredicate("key",
 				FilterOperator.EQUAL, key);
 		;
 		Query query = new Query(classValue.toString());
 		query.setFilter(filter);
 		PreparedQuery pq = datastore.prepare(query);
-		return this.mapTo(pq.asSingleEntity());
+		return this.mapTo(pq.asSingleEntity(), classValue);
 	}
 
 	@Override
-	public List<IEntity> findAll(Class<?> classValue) {
-		List<IEntity> result = new ArrayList<IEntity>();
-		Query query = new Query(classValue.toString());
+	public <T> List<T> findAll(Class<T> classValue) {
+		List<T> result = new ArrayList<T>();
+		Query query = new Query(classValue.getName());
 		PreparedQuery pq = datastore.prepare(query);
 		Iterable<Entity> iterator = pq.asIterable();
-		for(Entity dataStoreEntity:iterator){
-			result.add(this.mapTo(dataStoreEntity));
+		for (Entity dataStoreEntity : iterator) {
+			if (dataStoreEntity != null) {
+				result.add(this.mapTo(dataStoreEntity, classValue));
+			}
 		}
 		return result;
 	}
 
 	@Override
-	public void persist(IEntity entity) {
+	public void persist(Object entity) {
 		Entity dataStoreEntity = this.mapTo(entity);
 		this.datastore.put(dataStoreEntity);
 
 	}
 
 	@Override
-	public void remove(IEntity entity) {
+	public void remove(Object entity) {
 		// TODO Auto-generated method stub
 	}
 

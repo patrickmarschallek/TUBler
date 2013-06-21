@@ -28,9 +28,10 @@ public class Upload extends HttpServlet {
 			throws ServletException, IOException {
 
 		Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(req);
-		BlobKey blobKey = blobs.get("uploadedImage").get(0);
+		List<BlobKey> blobKeyList = blobs.get("uploadedFiles");
+		BlobKey blobKey = blobKeyList.get(0);
 		this.persist(blobKey.getKeyString(), req.getParameter("message"));
-		res.sendRedirect("/TUBLr");
+		res.sendRedirect("/TUBlr");
 	}
 
 	private void persist(String blobKey, String message) {
