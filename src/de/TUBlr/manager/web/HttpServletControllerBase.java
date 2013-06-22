@@ -57,7 +57,10 @@ public abstract class HttpServletControllerBase extends HttpServlet {
 			throws IOException, ServletException {
 		String op = getOperation(req);
 		HttpRequestActionBase action = (HttpRequestActionBase) actions.get(op);
-		action.perform(req, resp);
+		if (action == null)
+			new ShowHomeAction().perform(req, resp);
+		else
+			action.perform(req, resp);
 	}
 
 	/**

@@ -6,6 +6,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import de.TUBlr.manager.web.actions.CommentAction;
 import de.TUBlr.manager.web.actions.ShowHomeAction;
 
 public class TUBlrServlet extends HttpServletControllerBase {
@@ -15,6 +16,7 @@ public class TUBlrServlet extends HttpServletControllerBase {
 	public void init(ServletConfig conf) throws ServletException {
 		this.actions = new HashMap<String, HttpRequestActionBase>();
 		this.actions.put("", new ShowHomeAction());
+		this.actions.put("addComment", new CommentAction());
 	}
 
 	protected String getOperation(HttpServletRequest req) {

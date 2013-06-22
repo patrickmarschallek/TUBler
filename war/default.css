@@ -4,85 +4,77 @@ body {
 	font-size: 10pt;
 	font-weight: 300;
 	color: #363636;
+	margin: 0px;
+	padding: 0p;
 }
 
-
-#header-wrap
-{
+#header-wrap {
 	padding-top: 1em;
 	padding-bottom: 1em;
-	background: #E8E8E8;
-	box-shadow: inset 0 -10px 10px -10px rgba(0,0,0,.1);
+	box-shadow: inset 0 -10px 10px -10px rgba(0, 0, 0, .1);
 }
 
-#header 
-{
+#header {
 	text-align: center;
 }
 
-.post_form_wrap
-{
+.post_form_wrap {
 	float: left;
-    position: relative;
-    left: 50%;
+	position: relative;
+	left: 50%;
 }
 
-.post_form
-{
+.post_form {
 	font-weight: bold;
-    float: left;
-    position: relative;
-    left: -50%;
+	float: left;
+	position: relative;
+	left: -50%;
 }
 
-
-#content-wrapper
-{
-	margin: 50px;
+#content-wrapper {
+	background-color: #ddd;
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 15px;
 	clear: both;
 }
 
-.post
-{
+.post {
 	clear: both;
 }
 
-.post_data
-{
+.post_data {
+	
 }
 
-.post_image
-{
+.post_image {
 	margin-right: 10px;
-	float:left;
+	float: left;
 }
 
-.post_text
-{
+.post_text {
+	
 }
 
-.comment_data
-{
+.comment_data {
 	font-size: 9pt;
+	margin-right: 12px;
 	clear: both;
-	margin-left: 50px; 
 }
 
-.comment_image
-{
-	float:left;
+.comment_image {
+	float: left;
 	margin-right: 10px;
 }
 
-.comment_text
-{
-}
-
-.comment_form
-{
-	font-size: 9pt;
+.comment_text {
+	margin-left:200px;
 	clear: both;
-	margin-left: 50px; 
 }
 
-
+.comment_form {
+	font-size: 9pt;
+	float: left;
+	margin-left: 50px;
+}
