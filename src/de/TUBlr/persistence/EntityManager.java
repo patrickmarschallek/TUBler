@@ -11,12 +11,14 @@ import java.util.Map;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 public class EntityManager implements IEntityManager {
 
@@ -117,8 +119,10 @@ public class EntityManager implements IEntityManager {
 	public <T> List<T> findAll(Class<T> classValue) {
 		List<T> result = new ArrayList<T>();
 		Query query = new Query(classValue.getName());
+		query.addSort("created", SortDirection.DESCENDING);
 		PreparedQuery pq = datastore.prepare(query);
-		Iterable<Entity> iterator = pq.asIterable();
+		List<Entity> iterator = pq.asList(FetchOptions.Builder
+				.withLimit(20));
 		for (Entity dataStoreEntity : iterator) {
 			if (dataStoreEntity != null) {
 				result.add(this.mapTo(dataStoreEntity, classValue));

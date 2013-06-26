@@ -1,13 +1,11 @@
+<%@page import="java.util.Date"%>
 <%@page import="de.TUBlr.persistence.Image"%>
 <%@page import="de.TUBlr.persistence.EntityObject"%>
 <%@ page
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
 <%@ page import="com.google.appengine.api.blobstore.BlobstoreService"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%
-	BlobstoreService blobstoreService = BlobstoreServiceFactory
-			.getBlobstoreService();
-%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -17,7 +15,41 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <title>cc-g03-tublr</title>
 <script type="text/javascript" src="jQuery.js"></script>
+<script type="text/javascript" src="magnitifier.js"></script>
+
 <script type="text/javascript">
+	$(document).ready(function() {
+
+		$('.image-popup-vertical-fit').magnificPopup({
+			type : 'image',
+			closeOnContentClick : true,
+			mainClass : 'mfp-img-mobile',
+			image : {
+				verticalFit : true
+			}
+
+		});
+
+		$('.image-popup-fit-width').magnificPopup({
+			type : 'image',
+			closeOnContentClick : true,
+			image : {
+				verticalFit : false
+			}
+		});
+
+		$('.image-popup-no-margins').magnificPopup({
+			type : 'image',
+			closeOnContentClick : true,
+			closeBtnInside : false,
+			mainClass : 'mfp-no-margins', // class to remove default margin from left and right side
+			image : {
+				verticalFit : true
+			}
+		});
+
+	});
+
 	function submit(blobKey) {
 		var param = $("form[name=commentForm" + blobKey + "]").serialize();
 		$.ajax({
@@ -26,7 +58,7 @@
 			url : "TUBlr?do=addComment",
 			data : param
 		}).done(function(msg) {
-			alert("Data Saved: " + param);
+			location.reload();
 		});
 	}
 </script>
@@ -43,12 +75,11 @@
 		</div>
 
 		<div class="post_form_wrap">
-			<form class="post_form"
-				action="<%=blobstoreService.createUploadUrl("/upload")%>"
-				method="post" enctype="multipart/form-data">
+			<form class="post_form" action="${imageUploadUrl}" method="post"
+				enctype="multipart/form-data">
 				<h3>Post a new image:</h3>
 				Image: <input name="uploadedFiles" type="file" size="35"
-					maxlength="50000000" /> <br /> Message [optional]: <input
+					maxlength="5000000" /> <br /> Message [optional]: <input
 					name="description" type="text" size="30" maxlength="30" />
 				<p>
 					<input type="submit" class="submitButton" value="Post!" />
@@ -58,27 +89,49 @@
 		<div style="clear: both"></div>
 		<hr />
 		<c:forEach items="${resultMap}" var="entry" varStatus="index">
-			<div class="comment_data">
-				<div class="comment_image">
-					<a href="serve?blobKey=${entry.key['key']}"><img
-						src="serve?thumb=yes&blobKey=${entry.key['key']}"
-						alt="${entry.key['message']}" /></a>
-				</div>
-				<div class="comment_form">
-					<form name="commentForm${entry.key['key']}" method="post"
-						enctype="multipart/form-data">
-						Comment <input name="commentText" type="text" size="30"
-							maxlength="140" /> <input type="hidden" name="blobKey"
-							value="${entry.key['key']}" />
-					</form>
-					<button onclick="submit('${entry.key['key']}');" type="button">Post
-						Comment</button>
+			<div class="comment_data yoxview">
+				<div>
+					<div class="comment_image">
+						<br />
+						<div style="width: 150px;">
+							<a class="image-popup-vertical-fit"
+								href="serve?blobKey=${entry.key['key']}"> <img
+								src="serve?thumb=150&blobKey=${entry.key['key']}"
+								alt="${entry.key['message']}" />
+							</a>
+						</div>
+					</div>
+					<div class="comment_form">
+						<form action="${imageUploadUrl}"
+							name="commentForm${entry.key['key']}" method="post"
+							enctype="multipart/form-data">
+							Image: <input name="commentImage" type="file" size="35"
+								maxlength="5000000" /><br /> Comment <input name="commentText"
+								type="text" size="30" maxlength="140" /> <input type="hidden"
+								name="blobKey" value="${entry.key['key']}" /> <input
+								type="submit" value="comment" />
+						</form>
+						<br />
+						<fmt:formatDate value="${entry.key['created']}"
+							pattern="MM.dd.yyyy HH:mm:ss" />
+						<br> ${entry.key['message']}
+					</div>
 				</div>
 			</div>
-			<div style="clear:both;">
+			<div style="clear: both;">
 				<c:forEach items="${entry.value}" var="comment" varStatus="index">
-					<div class="comment_text">
-						<br />${comment.text}
+					<div style="overflow: hidden; clear: both;">
+						<div style="margin-left: 75px; float: left;">
+							<a class="image-popup-vertical-fit"
+								href="serve?blobKey=${comment.imageKey}"><img
+								src="serve?thumb=75&blobKey=${comment.imageKey}"
+								alt="${comment.text}" /></a>
+						</div>
+						<div class="comment_text">
+							<fmt:formatDate value="${comment['created']}"
+								pattern="MM.dd.yyyy HH:mm:ss" />
+							<br /> ${comment.text}
+						</div>
 					</div>
 				</c:forEach>
 			</div>

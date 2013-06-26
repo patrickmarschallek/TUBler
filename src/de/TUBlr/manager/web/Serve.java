@@ -22,9 +22,10 @@ public class Serve extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException {
 		BlobKey blobKey = new BlobKey(req.getParameter("blobKey"));
-		if (isThumbnail(req.getParameter("thumb"))) {
+		String thumbSize = req.getParameter("thumb");
+		if (isThumbnail(thumbSize)) {
 			res.sendRedirect(this.transformer
-					.transformToThumbnail(blobKey, 150));
+					.transformToThumbnail(blobKey, Integer.valueOf(thumbSize)));
 		} else {
 			this.blobstoreService.serve(blobKey, res);
 		}

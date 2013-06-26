@@ -1,10 +1,16 @@
 package de.TUBlr.persistence;
 
+import java.util.Date;
+
+
 public class Comment extends EntityObject {
 	private String text;
 	private String key;
+	private Date created = new Date(System.currentTimeMillis());
 
 	@Ancestor(reference = Image.class)
+	private String ancestor;
+	
 	private String imageKey;
 
 	public String getImageKey() {
@@ -31,4 +37,26 @@ public class Comment extends EntityObject {
 		this.text = text;
 	}
 
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public String getAncestor() {
+		return ancestor;
+	}
+
+	public void setAncestor(String ancestor) {
+		this.ancestor = ancestor;
+	}
+
+	@Override
+	public String toString() {
+		return "Comment [text=" + text + ", key=" + key + ", created="
+				+ created + ", ancestor=" + ancestor + ", imageKey=" + imageKey
+				+ "]";
+	}
 }

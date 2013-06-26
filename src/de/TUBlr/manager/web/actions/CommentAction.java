@@ -19,7 +19,6 @@ public class CommentAction extends HttpRequestActionBase {
 	@Override
 	public void perform(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException {
-		Map list = req.getParameterMap();
 		String imageKey = req.getParameter("blobKey");
 		String commentText = req.getParameter("commentText");
 		if (imageKey != null && commentText != null && !imageKey.isEmpty()) {

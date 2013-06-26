@@ -15,9 +15,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 import de.TUBlr.manager.web.HttpRequestActionBase;
 import de.TUBlr.persistence.Comment;
@@ -27,6 +26,8 @@ import de.TUBlr.persistence.Image;
 
 public class ShowHomeAction extends HttpRequestActionBase {
 
+	private BlobstoreService blobstoreService = BlobstoreServiceFactory
+			.getBlobstoreService();
 	private DatastoreService datastore = DatastoreServiceFactory
 			.getDatastoreService();
 	private IEntityManager em = new EntityManager();
@@ -36,11 +37,14 @@ public class ShowHomeAction extends HttpRequestActionBase {
 			throws ServletException {
 		try {
 			List<Entity> list = this.findAllImagesWithAncestor();
+
 			List<Image> imageList = this.em.findAll(Image.class);
 			List<Comment> commentList = this.em.findAll(Comment.class);
 			HashMap<Image, ArrayList<Comment>> result = this
 					.mapCommentsToImages(imageList, commentList);
 			req.setAttribute("resultMap", result);
+			req.setAttribute("imageUploadUrl",
+					this.blobstoreService.createUploadUrl("/upload"));
 			this.forward(req, resp, "tublr.jsp");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -55,8 +59,8 @@ public class ShowHomeAction extends HttpRequestActionBase {
 			ArrayList<Comment> list = new ArrayList<Comment>();
 			result.put(img, list);
 			for (Comment comment : commentList) {
-				if (comment.getImageKey() != null
-						&& comment.getImageKey().equals(img.getKey())) {
+				if (comment.getAncestor() != null
+						&& comment.getAncestor().equals(img.getKey())) {
 					result.get(img).add(comment);
 				}
 			}
@@ -65,9 +69,12 @@ public class ShowHomeAction extends HttpRequestActionBase {
 	}
 
 	private List<Entity> findAllImagesWithAncestor() {
-		Key key = KeyFactory.createKey(Image.class.getName(), "key");
-		Query query = new Query(Comment.class.getName()).setAncestor(key);
-		return this.datastore.prepare(query).asList(
-				FetchOptions.Builder.withDefaults());
+		// only images
+		Query query1 = new Query(Image.class.getName());
+		query1.addSort("created", SortDirection.DESCENDING);
+		List<Entity> list = this.datastore.prepare(query1).asList(
+				FetchOptions.Builder.withLimit(20));
+
+		return list;
 	}
 }
