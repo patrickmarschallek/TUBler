@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 
-public class Image extends EntityObject {
+public class Image extends EntityObject implements Comparable<Image>{
 	private String message;
 	private String key;
 	private Date created = new Date(System.currentTimeMillis());
@@ -42,6 +42,11 @@ public class Image extends EntityObject {
 	public String toString() {
 		return "Image [message=" + message + ", key=" + key + ", created="
 				+ created + "]";
+	}
+
+	@Override
+	public int compareTo(Image o) {
+		return o.created.compareTo(this.created);
 	}
 
 }

@@ -2,9 +2,11 @@ package de.TUBlr.manager.web.actions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
@@ -58,6 +60,7 @@ public class ShowHomeAction extends HttpRequestActionBase {
 	private TreeMap<Image, ArrayList<Comment>> mapCommentsToImages(
 			List<Image> imageList, List<Comment> commentList) {
 		HashMap<Image, ArrayList<Comment>> tempResult = new HashMap<Image, ArrayList<Comment>>();
+		
 		for (Image img : imageList) {
 			ArrayList<Comment> list = new ArrayList<Comment>();
 			for (Comment comment : commentList) {
@@ -69,10 +72,16 @@ public class ShowHomeAction extends HttpRequestActionBase {
 			
 			tempResult.put(img, list);
 		}
+			
+		List<Image> tempList = new ArrayList<Image>();
+		tempList.addAll(tempResult.keySet());
+		Collections.sort(tempList);
 		
-		ImageComparator imageComperator = new ImageComparator(tempResult);
-		TreeMap<Image, ArrayList<Comment>> sortedResult = new TreeMap<Image, ArrayList<Comment>>(imageComperator);
-		sortedResult.putAll(tempResult);
+		TreeMap<Image, ArrayList<Comment>> sortedResult = new TreeMap<Image, ArrayList<Comment>>();
+		for(Image image:tempList){
+			sortedResult.put(image, tempResult.get(image));
+		}
+		
 		return sortedResult;
 	}
 
@@ -88,9 +97,7 @@ public class ShowHomeAction extends HttpRequestActionBase {
 	
 	class ImageComparator implements Comparator<Image> {
 
-		HashMap<Image, ArrayList<Comment>> base;
-	    public ImageComparator(HashMap<Image, ArrayList<Comment>> base) {
-	        this.base = base;
+	    public ImageComparator() {
 	    }
 	    
 		@Override
