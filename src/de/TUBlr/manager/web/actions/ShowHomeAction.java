@@ -2,8 +2,10 @@ package de.TUBlr.manager.web.actions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +42,9 @@ public class ShowHomeAction extends HttpRequestActionBase {
 
 			List<Image> imageList = this.em.findAll(Image.class);
 			List<Comment> commentList = this.em.findAll(Comment.class);
-			HashMap<Image, ArrayList<Comment>> result = this
+			TreeMap<Image, ArrayList<Comment>> result = this
 					.mapCommentsToImages(imageList, commentList);
+			
 			req.setAttribute("resultMap", result);
 			req.setAttribute("imageUploadUrl",
 					this.blobstoreService.createUploadUrl("/upload"));
@@ -52,20 +55,25 @@ public class ShowHomeAction extends HttpRequestActionBase {
 		}
 	}
 
-	private HashMap<Image, ArrayList<Comment>> mapCommentsToImages(
+	private TreeMap<Image, ArrayList<Comment>> mapCommentsToImages(
 			List<Image> imageList, List<Comment> commentList) {
-		HashMap<Image, ArrayList<Comment>> result = new HashMap<Image, ArrayList<Comment>>();
+		HashMap<Image, ArrayList<Comment>> tempResult = new HashMap<Image, ArrayList<Comment>>();
 		for (Image img : imageList) {
 			ArrayList<Comment> list = new ArrayList<Comment>();
-			result.put(img, list);
 			for (Comment comment : commentList) {
 				if (comment.getAncestor() != null
 						&& comment.getAncestor().equals(img.getKey())) {
-					result.get(img).add(comment);
+					list.add(comment);
 				}
 			}
+			
+			tempResult.put(img, list);
 		}
-		return result;
+		
+		ImageComparator imageComperator = new ImageComparator(tempResult);
+		TreeMap<Image, ArrayList<Comment>> sortedResult = new TreeMap<Image, ArrayList<Comment>>(imageComperator);
+		sortedResult.putAll(tempResult);
+		return sortedResult;
 	}
 
 	private List<Entity> findAllImagesWithAncestor() {
@@ -76,5 +84,22 @@ public class ShowHomeAction extends HttpRequestActionBase {
 				FetchOptions.Builder.withLimit(20));
 
 		return list;
+	}
+	
+	class ImageComparator implements Comparator<Image> {
+
+		HashMap<Image, ArrayList<Comment>> base;
+	    public ImageComparator(HashMap<Image, ArrayList<Comment>> base) {
+	        this.base = base;
+	    }
+	    
+		@Override
+		public int compare(Image arg0, Image arg1) {
+			if(arg0.getCreated().after(arg1.getCreated())){
+				return -1;
+			}else{
+				return 0;	
+			}
+		}
 	}
 }

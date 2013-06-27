@@ -47,12 +47,20 @@ public class EntityManager implements IEntityManager {
 				throw new IllegalArgumentException("Illegal kind of Object "
 						+ obj + " it doesn't implements IEntity");
 			}
-		} catch (IllegalAccessException | InvocationTargetException
-				| NoSuchMethodException | SecurityException
-				| InstantiationException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+		}  catch (IllegalAccessException e){
+			e.printStackTrace();	
+		} catch (InvocationTargetException e){
+			e.printStackTrace();
+		} catch (NoSuchMethodException e){
+			e.printStackTrace();
+		} catch (SecurityException e){
+			e.printStackTrace();
+		} catch (InstantiationException e){
+			e.printStackTrace();
+		} catch (ClassNotFoundException e){
 			e.printStackTrace();
 		}
+
 		return null;
 	}
 
@@ -78,12 +86,17 @@ public class EntityManager implements IEntityManager {
 					parentClass = field.getAnnotation(Ancestor.class)
 							.reference();
 				}
-			} catch (NoSuchMethodException | SecurityException
-					| IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			}catch (NoSuchMethodException e){
+					e.printStackTrace();	
+				} catch (SecurityException e){
+					e.printStackTrace();
+				} catch (IllegalAccessException e){
+					e.printStackTrace();
+				} catch (IllegalArgumentException e){
+					e.printStackTrace();
+				} catch (InvocationTargetException e){
+					e.printStackTrace();
+				}
 		}
 
 		// Initialize with ancestor if it is possible

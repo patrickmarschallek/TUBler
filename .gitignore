@@ -13,3 +13,5 @@ war/WEB-INF/classes/
 
 */classes/
 */bin/
+
+.DS_Store

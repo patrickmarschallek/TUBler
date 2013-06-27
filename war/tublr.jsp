@@ -5,6 +5,7 @@
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
 <%@ page import="com.google.appengine.api.blobstore.BlobstoreService"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -80,7 +81,7 @@
 				<h3>Post a new image:</h3>
 				Image: <input name="uploadedFiles" type="file" size="35"
 					maxlength="5000000" /> <br /> Message [optional]: <input
-					name="description" type="text" size="30" maxlength="30" />
+					name="message" type="text" size="30" maxlength="30" />
 				<p>
 					<input type="submit" class="submitButton" value="Post!" />
 				</p>
@@ -102,26 +103,34 @@
 						</div>
 					</div>
 					<div class="comment_form">
-						<form action="${imageUploadUrl}"
-							name="commentForm${entry.key['key']}" method="post"
-							enctype="multipart/form-data">
-							Image: <input name="commentImage" type="file" size="35"
-								maxlength="5000000" /><br /> Comment <input name="commentText"
-								type="text" size="30" maxlength="140" /> <input type="hidden"
-								name="blobKey" value="${entry.key['key']}" /> <input
-								type="submit" value="comment" />
-						</form>
-						<br />
+					<br />
+						<div style="float:right; margin-left:120px; background-color:#d3d1d1;">
+						<h5>Reply to this post:</h5>
+							<form action="${imageUploadUrl}"
+								name="commentForm${entry.key['key']}" method="post"
+								enctype="multipart/form-data">
+								Image: <input name="commentImage" type="file" size="25"
+									maxlength="5000000" /><br /> Comment <input name="commentText"
+									type="text" size="25" maxlength="140" /> <input type="hidden"
+									name="blobKey" value="${entry.key['key']}" /> <input
+									type="submit" value="comment" />
+							</form>		
+						</div>
+
+						<div style="float:left;">
 						<fmt:formatDate value="${entry.key['created']}"
 							pattern="MM.dd.yyyy HH:mm:ss" />
-						<br> ${entry.key['message']}
+						 <br> 
+						 ${entry.key['message']}
+						</div>
 					</div>
 				</div>
 			</div>
 			<div style="clear: both;">
+				<h3 style="margin-left:160px; margin-top:5px;">Replies:</h3>
 				<c:forEach items="${entry.value}" var="comment" varStatus="index">
-					<div style="overflow: hidden; clear: both;">
-						<div style="margin-left: 75px; float: left;">
+					<div style="overflow: hidden; clear: both; margin-left: 170px; background-color:#d3d1d1">
+						<div style="float: left;">
 							<a class="image-popup-vertical-fit"
 								href="serve?blobKey=${comment.imageKey}"><img
 								src="serve?thumb=75&blobKey=${comment.imageKey}"
